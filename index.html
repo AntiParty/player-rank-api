@@ -6,7 +6,6 @@
     <title>Rank Tracker</title>
 </head>
 <body>
-    <h1>Player's Rank</h1>
     <div id="rank-info">Loading rank data...</div>
 
     <script>
@@ -26,22 +25,22 @@
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-                const latestMatch = data.rank_history[0];
+                const latestMatch = data.rank_history[0]; // Get the latest match
                 const newLevel = latestMatch.rank.new_level;
                 const rankName = rankMapping[newLevel];
                 const newScore = latestMatch.rank.new_score.toFixed(2);
                 const scoreChange = latestMatch.rank.add_score.toFixed(2);
 
-                // Insert the data into the page
-                document.getElementById('rank-info').textContent = 
-                    `Player's rank: ${rankName} (Level ${newLevel}) | Score: ${newScore} | Change: ${scoreChange}`;
+                // Build the response and update the HTML
+                const rankInfo = `Player's rank: ${rankName} (Level ${newLevel}) | Score: ${newScore} | Change: ${scoreChange}`;
+                document.getElementById('rank-info').textContent = rankInfo;
             } catch (error) {
-                document.getElementById('rank-info').textContent = "Failed to fetch rank data.";
                 console.error("Error fetching rank data:", error);
+                document.getElementById('rank-info').textContent = "Failed to fetch rank data.";
             }
         }
 
-        // Fetch the rank data on page load
+        // Call the function when the page loads
         fetchPlayerRank();
     </script>
 </body>
