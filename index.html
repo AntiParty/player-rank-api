@@ -6,6 +6,7 @@
     <title>Rank Tracker</title>
 </head>
 <body>
+    <h1>Player's Rank</h1>
     <div id="rank-info">Loading rank data...</div>
 
     <script>
@@ -41,7 +42,7 @@
         }
 
         // Call the function when the page loads
-        fetchPlayerRank();
+        window.onload = fetchPlayerRank;
     </script>
 </body>
 </html>
