@@ -14,10 +14,9 @@ async function fetchPlayerRank() {
     };
 
     try {
+        console.log("Fetching data from:", fullUrl); // Log the full URL
         const response = await fetch(fullUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        console.log("Response Status:", response.status); // Log the response status
         const data = await response.json();
         console.log("API Response:", data); // Log the API response
 
