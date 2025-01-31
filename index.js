@@ -21,22 +21,23 @@ async function fetchPlayerRank() {
         console.log("API Response:", data); // Log the API response
 
         // Check if the response has the expected structure
-        if (!data.rank_history || !Array.isArray(data.rank_history) || data.rank_history.length === 0) {
-            throw new Error("No rank history found in the API response.");
+        if (!data.player || !data.player.info || !data.player.info.rank_game_1001001) {
+            throw new Error("Rank data not found in the API response.");
         }
 
-        const latestMatch = data.rank_history[0];
-        if (!latestMatch.rank) {
-            throw new Error("Rank data not found in the latest match.");
+        const rankData = data.player.info.rank_game_1001001.rank_game;
+        if (!rankData) {
+            throw new Error("Rank data not found in the API response.");
         }
 
-        const newLevel = latestMatch.rank.new_level;
-        const rankName = rankMapping[newLevel];
-        const newScore = latestMatch.rank.new_score.toFixed(2);
-        const scoreChange = latestMatch.rank.add_score.toFixed(2);
+        const currentLevel = rankData.level;
+        const rankName = rankMapping[currentLevel];
+        const currentScore = rankData.rank_score.toFixed(2);
+        const maxLevel = rankData.max_level;
+        const maxScore = rankData.max_rank_score.toFixed(2);
 
         // Build the response
-        return `Player's rank: ${rankName} (Level ${newLevel}) | Score: ${newScore} | Change: ${scoreChange}`;
+        return `Player's rank: ${rankName} (Level ${currentLevel}) | Current Score: ${currentScore} | Max Level: ${maxLevel} | Max Score: ${maxScore}`;
     } catch (error) {
         console.error("Error fetching rank data:", error);
         return "Failed to fetch rank data. Please try again later.";
