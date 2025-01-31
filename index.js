@@ -1,5 +1,7 @@
 async function fetchPlayerRank() {
-    const apiUrl = "https://cors-anywhere-a9umzovfq-antiparty1s-projects.vercel.app/https://api.rivalstracker.com/api/player/2118492390?season=2";
+    const proxyUrl = "https://cors-anywhere-flame.vercel.app/";
+    const apiUrl = "https://api.rivalstracker.com/api/player/2118492390?season=2";
+    const fullUrl = `${proxyUrl}${apiUrl}`;
     const rankMapping = {
         1: "Bronze 1", 2: "Bronze 2", 3: "Bronze 3",
         4: "Silver 1", 5: "Silver 2", 6: "Silver 3",
@@ -12,7 +14,10 @@ async function fetchPlayerRank() {
     };
 
     try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(fullUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
         const latestMatch = data.rank_history[0];
         const newLevel = latestMatch.rank.new_level;
@@ -24,11 +29,6 @@ async function fetchPlayerRank() {
         return `Player's rank: ${rankName} (Level ${newLevel}) | Score: ${newScore} | Change: ${scoreChange}`;
     } catch (error) {
         console.error("Error fetching rank data:", error);
-        return "Failed to fetch rank data.";
+        return "Failed to fetch rank data. Please try again later.";
     }
 }
-
-// Run the function and display the result in your page
-fetchPlayerRank().then(response => {
-    document.getElementById("rank-info").textContent = response;
-});
