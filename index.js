@@ -2,16 +2,33 @@ async function fetchPlayerRank() {
     const proxyUrl = "https://corsproxy.io/?"; // Use a reliable CORS proxy
     const apiUrl = "https://api.rivalstracker.com/api/player/2118492390?season=2";
     const fullUrl = `${proxyUrl}${encodeURIComponent(apiUrl)}`; // Combine proxy and API URL
-    const rankMapping = {
-        1: "Bronze 3", 2: "Bronze 2", 3: "Bronze 1",
-        4: "Silver 3", 5: "Silver 2", 6: "Silver 1",
-        7: "Gold 3", 8: "Gold 2", 9: "Gold 1",
-        10: "Platinum 3", 11: "Platinum 2", 12: "Platinum 1",
-        13: "Diamond 3", 14: "Diamond 2", 15: "Diamond 1",
-        16: "Grandmaster 3", 17: "Grandmaster 2", 18: "Grandmaster 1",
-        19: "Celestial 3", 20: "Celestial 2", 21: "Celestial 1",
-        22: "Eternity", 23: "One Above All"
-    };
+
+    // Rank thresholds (each rank requires 100 points)
+    const rankThresholds = [
+        { name: "Bronze 1", minScore: 0 },
+        { name: "Bronze 2", minScore: 100 },
+        { name: "Bronze 3", minScore: 200 },
+        { name: "Silver 1", minScore: 300 },
+        { name: "Silver 2", minScore: 400 },
+        { name: "Silver 3", minScore: 500 },
+        { name: "Gold 1", minScore: 600 },
+        { name: "Gold 2", minScore: 700 },
+        { name: "Gold 3", minScore: 800 },
+        { name: "Platinum 1", minScore: 900 },
+        { name: "Platinum 2", minScore: 1000 },
+        { name: "Platinum 3", minScore: 1100 },
+        { name: "Diamond 1", minScore: 1200 },
+        { name: "Diamond 2", minScore: 1300 },
+        { name: "Diamond 3", minScore: 1400 },
+        { name: "Grandmaster 1", minScore: 1500 },
+        { name: "Grandmaster 2", minScore: 1600 },
+        { name: "Grandmaster 3", minScore: 1700 },
+        { name: "Celestial 1", minScore: 1800 },
+        { name: "Celestial 2", minScore: 1900 },
+        { name: "Celestial 3", minScore: 2000 },
+        { name: "Eternity", minScore: 2100 },
+        { name: "One Above All", minScore: 2200 }
+    ];
 
     try {
         console.log("Fetching data from:", fullUrl); // Log the full URL
@@ -25,26 +42,28 @@ async function fetchPlayerRank() {
             throw new Error("Player info not found in the API response.");
         }
 
-        // Extract rank data from rank_game_1001002
-        const rankDataString = data.player.info.rank_game_1001002;
-        if (!rankDataString) {
+        // Extract rank data from rank_game_1001001
+        const rankData = data.player.info.rank_game_1001001;
+        if (!rankData || !rankData.rank_game) {
             throw new Error("Rank data not found in the API response.");
         }
 
-        // Parse the rank data (it's a JSON string)
-        const rankData = JSON.parse(rankDataString).rank_game;
-        if (!rankData) {
-            throw new Error("Rank data not found in the API response.");
+        const maxScore = rankData.rank_game.max_rank_score;
+
+        // Calculate the rank based on maxScore
+        let rankName = "Unranked";
+        for (let i = rankThresholds.length - 1; i >= 0; i--) {
+            if (maxScore >= rankThresholds[i].minScore) {
+                rankName = rankThresholds[i].name;
+                break;
+            }
         }
 
-        const currentLevel = rankData.level;
-        const rankName = rankMapping[currentLevel];
-        const currentScore = rankData.rank_score.toFixed(2);
-        const maxLevel = rankData.max_level;
-        const maxScore = rankData.max_rank_score.toFixed(2);
+        const currentScore = rankData.rank_game.rank_score.toFixed(2);
+        const maxLevel = rankData.rank_game.max_level;
 
         // Build the response
-        return `Player's rank: ${rankName} (Level ${currentLevel}) | Current Score: ${currentScore} | Max Level: ${maxLevel} | Max Score: ${maxScore}`;
+        return `Player's rank: ${rankName} | Current Score: ${currentScore} | Max Level: ${maxLevel} | Max Score: ${maxScore.toFixed(2)}`;
     } catch (error) {
         console.error("Error fetching rank data:", error);
         return "Failed to fetch rank data. Please try again later.";
