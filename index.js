@@ -1,7 +1,7 @@
 async function fetchPlayerRank() {
-    const proxyUrl = "https://cors-anywhere-flame.vercel.app/";
+    const proxyUrl = "https://corsproxy.io/?"; // Use a reliable CORS proxy
     const apiUrl = "https://api.rivalstracker.com/api/player/2118492390?season=2";
-    const fullUrl = `${proxyUrl}${apiUrl}`;
+    const fullUrl = `${proxyUrl}${encodeURIComponent(apiUrl)}`; // Combine proxy and API URL
     const rankMapping = {
         1: "Bronze 1", 2: "Bronze 2", 3: "Bronze 3",
         4: "Silver 1", 5: "Silver 2", 6: "Silver 3",
@@ -32,3 +32,8 @@ async function fetchPlayerRank() {
         return "Failed to fetch rank data. Please try again later.";
     }
 }
+
+// Run the function and display the result in your page
+fetchPlayerRank().then(response => {
+    document.getElementById("rank-info").textContent = response;
+});
