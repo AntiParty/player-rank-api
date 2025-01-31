@@ -44,7 +44,7 @@ async function fetchPlayerRank() {
         const maxScore = rankData.max_rank_score.toFixed(2);
 
         // Build the response
-        return `Player's rank: ${rankName} (Level ${currentLevel}) | Current Score: ${currentScore} | Max Level: ${maxLevel} | Max Score: ${maxScore}`;
+        return `${rankName}`;
     } catch (error) {
         console.error("Error fetching rank data:", error);
         return "Failed to fetch rank data. Please try again later.";
