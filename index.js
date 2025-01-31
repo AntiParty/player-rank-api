@@ -1,7 +1,7 @@
 async function fetchPlayerRank() {
     const proxyUrl = "https://corsproxy.io/?"; // Use a reliable CORS proxy
     const apiUrl = "https://api.rivalstracker.com/api/player/2118492390?season=2";
-    const fullUrl = `https://corsproxy.io/?https://api.rivalstracker.com/api/player/2118492390?season=2`; // Combine proxy and API URL
+    const fullUrl = `${proxyUrl}${encodeURIComponent(apiUrl)}`; // Combine proxy and API URL
     const rankMapping = {
         1: "Bronze 1", 2: "Bronze 2", 3: "Bronze 3",
         4: "Silver 1", 5: "Silver 2", 6: "Silver 3",
@@ -19,6 +19,13 @@ async function fetchPlayerRank() {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        console.log("API Response:", data); // Log the API response
+
+        // Check if the response has the expected structure
+        if (!data.rank_history || !data.rank_history[0] || !data.rank_history[0].rank) {
+            throw new Error("Invalid API response structure");
+        }
+
         const latestMatch = data.rank_history[0];
         const newLevel = latestMatch.rank.new_level;
         const rankName = rankMapping[newLevel];
