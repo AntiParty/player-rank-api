@@ -11,7 +11,7 @@ async function fetchPlayerRank() {
         16: "Grandmaster 3", 17: "Grandmaster 2", 18: "Grandmaster 1",
         19: "Celestial 3", 20: "Celestial 2", 21: "Celestial 1",
         22: "Eternity", 23: "One Above All"
-    };
+};
 
     try {
         console.log("Fetching data from:", fullUrl); // Log the full URL
