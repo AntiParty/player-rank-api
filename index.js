@@ -1,5 +1,5 @@
 async function fetchPlayerRank() {
-    const apiUrl = "https://cors-anywhere.herokuapp.com/https://api.rivalstracker.com/api/player/2118492390?season=2";
+    const apiUrl = "https://corsproxy.io/?https://api.rivalstracker.com/api/player/2118492390?season=2";
     const rankMapping = {
         1: "Bronze 1", 2: "Bronze 2", 3: "Bronze 3",
         4: "Silver 1", 5: "Silver 2", 6: "Silver 3",
@@ -12,15 +12,9 @@ async function fetchPlayerRank() {
     };
 
     try {
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-
+        const response = await fetch(apiUrl);
         const data = await response.json();
-        const latestMatch = data.rank_history[0]; // Get the latest match
+        const latestMatch = data.rank_history[0];
         const newLevel = latestMatch.rank.new_level;
         const rankName = rankMapping[newLevel];
         const newScore = latestMatch.rank.new_score.toFixed(2);
