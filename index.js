@@ -21,20 +21,21 @@ async function fetchPlayerRank() {
         console.log("API Response:", data); // Log the API response
 
         // Check if the response has the expected structure
-        if (!data.player || !data.player.info || !data.player.info.rank_game_1001001) {
+        if (!data.player || !data.player.info) {
+            throw new Error("Player info not found in the API response.");
+        }
+
+        // Extract rank data from rank_game_1001001
+        const rankData = data.player.info.rank_game_1001001;
+        if (!rankData || !rankData.rank_game) {
             throw new Error("Rank data not found in the API response.");
         }
 
-        const rankData = data.player.info.rank_game_1001001.rank_game;
-        if (!rankData) {
-            throw new Error("Rank data not found in the API response.");
-        }
-
-        const currentLevel = rankData.level;
+        const currentLevel = rankData.rank_game.level;
         const rankName = rankMapping[currentLevel];
-        const currentScore = rankData.rank_score.toFixed(2);
-        const maxLevel = rankData.max_level;
-        const maxScore = rankData.max_rank_score.toFixed(2);
+        const currentScore = rankData.rank_game.rank_score.toFixed(2);
+        const maxLevel = rankData.rank_game.max_level;
+        const maxScore = rankData.rank_game.max_rank_score.toFixed(2);
 
         // Build the response
         return `Player's rank: ${rankName} (Level ${currentLevel}) | Current Score: ${currentScore} | Max Level: ${maxLevel} | Max Score: ${maxScore}`;
