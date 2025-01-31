@@ -1,7 +1,8 @@
 async function fetchPlayerRank() {
-    const proxyUrl = "https://corsproxy.io/?"; // Use a reliable CORS proxy
+    const proxyUrl = "https://corsproxy.io/?";
     const apiUrl = "https://api.rivalstracker.com/api/player/2118492390?season=2";
-    const fullUrl = `${proxyUrl}${encodeURIComponent(apiUrl)}`; // Combine proxy and API URL
+    const fullUrl = `${proxyUrl}${encodeURIComponent(apiUrl)}`;
+    
     const rankMapping = {
         1: "Bronze 3", 2: "Bronze 2", 3: "Bronze 1",
         4: "Silver 3", 5: "Silver 2", 6: "Silver 1",
@@ -14,44 +15,36 @@ async function fetchPlayerRank() {
     };
 
     try {
-        console.log("Fetching data from:", fullUrl); // Log the full URL
         const response = await fetch(fullUrl);
-        console.log("Response Status:", response.status); // Log the response status
         const data = await response.json();
-        console.log("API Response:", data); // Log the API response
 
-        // Check if the response has the expected structure
         if (!data.player || !data.player.info) {
-            throw new Error("Player info not found in the API response.");
+            throw new Error("Player info not found.");
         }
 
-        // Extract rank data from rank_game_1001002
         const rankDataString = data.player.info.rank_game_1001002;
         if (!rankDataString) {
-            throw new Error("Rank data not found in the API response.");
+            throw new Error("Rank data missing.");
         }
 
-        // Parse the rank data (it's a JSON string)
         const rankData = JSON.parse(rankDataString).rank_game;
-        if (!rankData) {
-            throw new Error("Rank data not found in the API response.");
+        const rankName = rankMapping[rankData.level];
+
+        const rankInfo = { rank: rankName };
+
+        // 📌 Detect if it's a bot request (checking for URL parameters)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("json")) {
+            // Return JSON (only works if GitHub Pages allows JavaScript execution)
+            document.body.innerText = JSON.stringify(rankInfo);
+        } else {
+            // Display on webpage
+            document.getElementById("rank-info").textContent = rankName;
         }
-
-        const currentLevel = rankData.level;
-        const rankName = rankMapping[currentLevel];
-        const currentScore = rankData.rank_score.toFixed(2);
-        const maxLevel = rankData.max_level;
-        const maxScore = rankData.max_rank_score.toFixed(2);
-
-        // Build the response
-        return `${rankName}`;
     } catch (error) {
-        console.error("Error fetching rank data:", error);
-        return "Failed to fetch rank data. Please try again later.";
+        console.error("Error:", error);
+        document.getElementById("rank-info").textContent = "Error fetching rank data.";
     }
 }
 
-// Run the function and display the result in your page
-fetchPlayerRank().then(response => {
-    document.getElementById("rank-info").textContent = response;
-});
+fetchPlayerRank();
