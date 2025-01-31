@@ -1,5 +1,5 @@
 async function fetchPlayerRank() {
-    const apiUrl = "https://corsproxy.io/?https://api.rivalstracker.com/api/player/2118492390?season=2";
+    const apiUrl = "https://cors-anywhere-a9umzovfq-antiparty1s-projects.vercel.app/https://api.rivalstracker.com/api/player/2118492390?season=2";
     const rankMapping = {
         1: "Bronze 1", 2: "Bronze 2", 3: "Bronze 3",
         4: "Silver 1", 5: "Silver 2", 6: "Silver 3",
