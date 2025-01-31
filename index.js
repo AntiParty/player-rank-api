@@ -11,7 +11,7 @@ async function fetchPlayerRank() {
         16: "Grandmaster 3", 17: "Grandmaster 2", 18: "Grandmaster 1",
         19: "Celestial 3", 20: "Celestial 2", 21: "Celestial 1",
         22: "Eternity", 23: "One Above All"
-};
+    };
 
     try {
         console.log("Fetching data from:", fullUrl); // Log the full URL
@@ -25,17 +25,23 @@ async function fetchPlayerRank() {
             throw new Error("Player info not found in the API response.");
         }
 
-        // Extract rank data from rank_game_1001001
-        const rankData = data.player.info.rank_game_1001001;
-        if (!rankData || !rankData.rank_game) {
+        // Extract rank data from rank_game_1001002
+        const rankDataString = data.player.info.rank_game_1001002;
+        if (!rankDataString) {
             throw new Error("Rank data not found in the API response.");
         }
 
-        const currentLevel = rankData.rank_game.level;
+        // Parse the rank data (it's a JSON string)
+        const rankData = JSON.parse(rankDataString).rank_game;
+        if (!rankData) {
+            throw new Error("Rank data not found in the API response.");
+        }
+
+        const currentLevel = rankData.level;
         const rankName = rankMapping[currentLevel];
-        const currentScore = rankData.rank_game.rank_score.toFixed(2);
-        const maxLevel = rankData.rank_game.max_level;
-        const maxScore = rankData.rank_game.max_rank_score.toFixed(2);
+        const currentScore = rankData.rank_score.toFixed(2);
+        const maxLevel = rankData.max_level;
+        const maxScore = rankData.max_rank_score.toFixed(2);
 
         // Build the response
         return `Player's rank: ${rankName} (Level ${currentLevel}) | Current Score: ${currentScore} | Max Level: ${maxLevel} | Max Score: ${maxScore}`;
